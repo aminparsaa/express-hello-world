@@ -1,95 +1,81 @@
 const express = require("express");
 const app = express();
+
+// Render مقدار PORT را خودش می‌دهد؛ اگر نبود، از 3001 استفاده می‌کنیم.
 const port = process.env.PORT || 3001;
 
-app.get("/", (req, res) => res.type('html').send(html));
-app.get('/configs', (req, res) => {
+// روت اصلی: صفحه ساده HTML
+app.get("/", (req, res) => {
+  res.type("html").send(html);
+});
+
+// لیست JSON کانفیگ‌ها برای استفاده در وب یا ابزارهای دیگر
+app.get("/configs", (req, res) => {
   const configs = [
     {
       id: 1,
-      name: 'test-vless',
-      note: 'نمونه تستی برای تمرین',
-      config: 'vmess://ewogICAgImFkZCI6ICJ2MTAuaGVkdWlhbi5saW5rIiwKICAgICJhaWQiOiAyLAogICAgImhvc3QiOiAidjEwLmhlZHVpYW4ubGluayIsCiAgICAiaWQiOiAiY2JiM2Y4NzctZDFmYi0zNDRjLTg3YTktZDE1M2JmZmQ1NDg0IiwKICAgICJuZXQiOiAid3MiLAogICAgInBhdGgiOiAiL29vb28iLAogICAgInBvcnQiOiAzMDgwNywKICAgICJwcyI6ICLwn4et8J+HsEhLLTIxOS43OS4xODcuMTg4LTUwNTYiLAogICAgInRscyI6ICIiLAogICAgInR5cGUiOiAiYXV0byIsCiAgICAic2VjdXJpdHkiOiAiYXV0byIsCiAgICAic2tpcC1jZXJ0LXZlcmlmeSI6IGZhbHNlLAogICAgInNuaSI6ICJiYWlkdS5jb20iCn0='
-    },
-    {
-      id: 2,
-      name: 'test-vmess',
-      note: 'نمونه دوم تستی',
-      config: 'vmess://another-example-config'
+      name: "free-vmess-1",
+      note: "نمونه تستی با لینک واقعی",
+      // اینجا یک لینک vmess واقعی قرار دهید:
+      config: "vmess://اینجا-لینک-واقعی-vmess-خودتان-را-کامل-بگذارید"
     }
+    // اگر خواستید کانفیگ‌های بیشتری اضافه کنید، به همین شکل عنصرهای دیگر به آرایه اضافه کنید
+    // {
+    //   id: 2,
+    //   name: "free-vless-1",
+    //   note: "نمونه vless",
+    //   config: "vless://لینک-واقعی-vless"
+    // }
   ];
 
   res.json(configs);
 });
-app.get('/sub', (req, res) => {
-  // همین لیست را می‌توانید با configs واقعی‌تان هماهنگ کنید
+
+// آدرس Subscription مخصوص v2rayNG (Base64 از لیست لینک‌ها، هر لینک در یک خط)
+app.get("/sub", (req, res) => {
+  // همان لینک‌هایی که می‌خواهید به v2rayNG برسند
   const links = [
-    'vmess://ewogICAgImFkZCI6ICJ2MTAuaGVkdWlhbi5saW5rIiwKICAgICJhaWQiOiAyLAogICAgImhvc3QiOiAidjEwLmhlZHVpYW4ubGluayIsCiAgICAiaWQiOiAiY2JiM2Y4NzctZDFmYi0zNDRjLTg3YTktZDE1M2JmZmQ1NDg0IiwKICAgICJuZXQiOiAid3MiLAogICAgInBhdGgiOiAiL29vb28iLAogICAgInBvcnQiOiAzMDgwNywKICAgICJwcyI6ICLwn4et8J+HsEhLLTIxOS43OS4xODcuMTg4LTUwNTYiLAogICAgInRscyI6ICIiLAogICAgInR5cGUiOiAiYXV0byIsCiAgICAic2VjdXJpdHkiOiAiYXV0byIsCiAgICAic2tpcC1jZXJ0LXZlcmlmeSI6IGZhbHNlLAogICAgInNuaSI6ICJiYWlkdS5jb20iCn0=',
-    'vmess://another-example-config'
+    // دقیقا همان لینک vmess واقعی که در بالا در configs گذاشتید:
+    "vmess://اینجا-همان-لینک-واقعی-vmess-را-قرار-دهید"
+    // اگر چند لینک دیگر هم دارید، فقط با کاما و در خط‌های بعد اضافه کنید:
+    // "vless://لینک-دیگر-در-خط-جدا",
+    // "vmess://لینک-سوم-در-خط-جدا"
   ];
 
-  // هر لینک در یک خط جداگانه
-  const joined = links.join('\n');
+  // هر لینک در یک خط جدا
+  const joined = links.join("\n");
 
-  // تبدیل به Base64
-  const base64 = Buffer.from(joined, 'utf-8').toString('base64');
+  // تبدیل متن به Base64 طبق فرمت Subscription
+  const base64 = Buffer.from(joined, "utf-8").toString("base64");
 
-  // ارسال به عنوان متن ساده (text/plain)
-  res.type('text/plain').send(base64);
+  // ارسال به‌صورت متن ساده
+  res.type("text/plain").send(base64);
 });
 
-const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+// اجرای سرور
+const server = app.listen(port, () => {
+  console.log(`Example app listening on port ${port}!`);
+});
 
+// تنظیمات keep-alive (همان چیزی که در نسخه اصلی Render بود)
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
 
+// محتوای HTML ساده برای صفحه اصلی
 const html = `
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Hello from Render!</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          disableForReducedMotion: true
-        });
-      }, 500);
-    </script>
-    <style>
-      @import url("https://p.typekit.net/p.css?s=1&k=vnd5zic&ht=tk&f=39475.39476.39477.39478.39479.39480.39481.39482&a=18673890&app=typekit&e=css");
-      @font-face {
-        font-family: "neo-sans";
-        src: url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff2"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("woff"), url("https://use.typekit.net/af/00ac0a/00000000000000003b9b2033/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3") format("opentype");
-        font-style: normal;
-        font-weight: 700;
-      }
-      html {
-        font-family: neo-sans;
-        font-weight: 700;
-        font-size: calc(62rem / 16);
-      }
-      body {
-        background: white;
-      }
-      section {
-        border-radius: 1em;
-        padding: 1em;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-right: -50%;
-        transform: translate(-50%, -50%);
-      }
-    </style>
+    <title>amin-v2ray-config</title>
+    <meta charset="utf-8" />
   </head>
   <body>
-    <section>
-      Hello from Render!
-    </section>
+    <h1>amin-v2ray-config</h1>
+    <p>این سرویس برای تست API کانفیگ V2Ray و Subscription ساخته شده است.</p>
+    <ul>
+      <li><a href="/configs">نمایش JSON کانفیگ‌ها (/configs)</a></li>
+      <li><a href="/sub">خروجی Subscription برای v2rayNG (/sub)</a></li>
+    </ul>
   </body>
 </html>
-`
+`;
