@@ -3,6 +3,24 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.get("/", (req, res) => res.type('html').send(html));
+app.get('/configs', (req, res) => {
+  const configs = [
+    {
+      id: 1,
+      name: 'test-vless',
+      note: 'نمونه تستی برای تمرین',
+      config: 'vless://example-config-string'
+    },
+    {
+      id: 2,
+      name: 'test-vmess',
+      note: 'نمونه دوم تستی',
+      config: 'vmess://another-example-config'
+    }
+  ];
+
+  res.json(configs);
+});
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
