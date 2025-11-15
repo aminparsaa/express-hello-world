@@ -21,6 +21,22 @@ app.get('/configs', (req, res) => {
 
   res.json(configs);
 });
+app.get('/sub', (req, res) => {
+  // همین لیست را می‌توانید با configs واقعی‌تان هماهنگ کنید
+  const links = [
+    'vless://example-config-string',
+    'vmess://another-example-config'
+  ];
+
+  // هر لینک در یک خط جداگانه
+  const joined = links.join('\n');
+
+  // تبدیل به Base64
+  const base64 = Buffer.from(joined, 'utf-8').toString('base64');
+
+  // ارسال به عنوان متن ساده (text/plain)
+  res.type('text/plain').send(base64);
+});
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
