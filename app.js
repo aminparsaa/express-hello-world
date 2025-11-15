@@ -4,7 +4,7 @@ const app = express();
 // Render مقدار PORT را خودش می‌دهد؛ اگر نبود، از 3001 استفاده می‌کنیم.
 const port = process.env.PORT || 3001;
 
-// روت اصلی: صفحه ساده HTML
+// روت اصلی: صفحه ساده HTML برای تست
 app.get("/", (req, res) => {
   res.type("html").send(html);
 });
@@ -14,32 +14,23 @@ app.get("/configs", (req, res) => {
   const configs = [
     {
       id: 1,
-      name: "free-vmess-1",
-      note: "نمونه تستی با لینک واقعی",
-      // اینجا یک لینک vmess واقعی قرار دهید:
-      config: "vmess://اینجا-لینک-واقعی-vmess-خودتان-را-کامل-بگذارید"
+      name: "demo-vmess-1",
+      note: "نمونه تستی، فقط برای تست import شدن در v2rayNG",
+      // vmess استاندارد (ساختار صحیح، اما روی example.com سرور واقعی وجود ندارد)
+      config:
+        "vmess://eyJ2IjoiMiIsInBzIjoiZGVtby1ub2RlIiwiYWRkIjoiZXhhbXBsZS5jb20iLCJwb3J0IjoiNDQzIiwiaWQiOiJiODMxMzgxZC02MzI0LTRkNTMtYWQ0Zi04Y2RhNDhiMzA4MTEiLCJhaWQiOiIwIiwibmV0Ijoid3MiLCJ0eXBlIjoibm9uZSIsImhvc3QiOiJleGFtcGxlLmNvbSIsInBhdGgiOiIvd2Vic29ja2V0IiwidGxzIjoidGxzIn0="
     }
-    // اگر خواستید کانفیگ‌های بیشتری اضافه کنید، به همین شکل عنصرهای دیگر به آرایه اضافه کنید
-    // {
-    //   id: 2,
-    //   name: "free-vless-1",
-    //   note: "نمونه vless",
-    //   config: "vless://لینک-واقعی-vless"
-    // }
   ];
 
   res.json(configs);
 });
 
-// آدرس Subscription مخصوص v2rayNG (Base64 از لیست لینک‌ها، هر لینک در یک خط)
+// آدرس Subscription مخصوص v2rayNG
+// خروجی: Base64 از لیست لینک‌ها (هر لینک در یک خط) طبق فرمت Subscription
 app.get("/sub", (req, res) => {
-  // همان لینک‌هایی که می‌خواهید به v2rayNG برسند
   const links = [
-    // دقیقا همان لینک vmess واقعی که در بالا در configs گذاشتید:
-    "vmess://اینجا-همان-لینک-واقعی-vmess-را-قرار-دهید"
-    // اگر چند لینک دیگر هم دارید، فقط با کاما و در خط‌های بعد اضافه کنید:
-    // "vless://لینک-دیگر-در-خط-جدا",
-    // "vmess://لینک-سوم-در-خط-جدا"
+    // همان لینک vmess بالا
+    "vmess://eyJ2IjoiMiIsInBzIjoiZGVtby1ub2RlIiwiYWRkIjoiZXhhbXBsZS5jb20iLCJwb3J0IjoiNDQzIiwiaWQiOiJiODMxMzgxZC02MzI0LTRkNTMtYWQ0Zi04Y2RhNDhiMzA4MTEiLCJhaWQiOiIwIiwibmV0Ijoid3MiLCJ0eXBlIjoibm9uZSIsImhvc3QiOiJleGFtcGxlLmNvbSIsInBhdGgiOiIvd2Vic29ja2V0IiwidGxzIjoidGxzIn0="
   ];
 
   // هر لینک در یک خط جدا
@@ -57,7 +48,7 @@ const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
 
-// تنظیمات keep-alive (همان چیزی که در نسخه اصلی Render بود)
+// تنظیمات keep-alive مطابق نمونه اصلی Render
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
 
